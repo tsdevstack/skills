@@ -1,0 +1,33 @@
+{
+  "_readme": "Third-party skill decisions for tsdevstack. `install[]` = blessed, auto-installed by init/sync via `npx skills add <source> --skill <skill> ...` pinned to `ref` (not re-hosted). `candidates[]` = vetted but not yet enabled. `rejected[]` = considered and declined, with reason (kept for the record).",
+  "install": [
+    {
+      "name": "Next.js dev-loop (official — Vercel / Next.js core)",
+      "source": "vercel/next.js",
+      "skills": ["next-dev-loop"],
+      "ref": "f6d094061e0c27ad74b3344065d203933021011c",
+      "publisher": "official",
+      "note": "Version-agnostic: verify runtime behavior after editing app code. Pinned by SHA (no stable tag carries it yet)."
+    }
+  ],
+  "candidates": [
+    {
+      "name": "Next.js Cache Components (official) — revisit later",
+      "source": "vercel/next.js",
+      "skills": ["next-cache-components-adoption", "next-cache-components-optimizer", "next-partial-prefetching-adoption"],
+      "ref": "f6d094061e0c27ad74b3344065d203933021011c",
+      "publisher": "official",
+      "note": "Enable if/when the generated frontend adopts Cache Components on Next 16.3+. Not applicable at 16.2.6."
+    }
+  ],
+  "rejected": [
+    {
+      "name": "NestJS (third-party)",
+      "reason": "Models already know NestJS basics. tsdevstack's value is its custom layer (nest-common wrappers, modules, guards, decorators). Authoring an in-house nest-common skill instead of blessing a community NestJS skill."
+    },
+    {
+      "name": "Kong (Kong/ai-marketplace, official)",
+      "reason": "Skews to Kong Konnect (SaaS) / decK workflows. tsdevstack generates and deploys kong.yml itself. Covered by the in-house add-an-endpoint / gateway skill instead."
+    }
+  ]
+}
