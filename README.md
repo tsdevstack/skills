@@ -23,17 +23,17 @@ Update later with `npx skills update`.
 
 Skills are grouped by trigger into three folders:
 
-- `cross-cutting/` — `tsdevstack-auth-model` (two-layer Kong + AuthGuard) ·
+- `cross-cutting/`: `tsdevstack-auth-model` (two-layer Kong + AuthGuard) ·
   `tsdevstack-nest-common` (backend building blocks) · `tsdevstack-secrets`
   (the 3-file secret system) · `tsdevstack-messaging` (pub/sub) ·
   `tsdevstack-storage` (object storage).
-- `local/` — `tsdevstack-run-locally` (bring-up + troubleshooting) ·
+- `local/`: `tsdevstack-run-locally` (bring-up + troubleshooting) ·
   `tsdevstack-add-an-endpoint` (decorator → OpenAPI → Kong → client) ·
   `tsdevstack-db-changes` (Prisma migrations: local creates, deploys apply) ·
   `tsdevstack-service-and-worker-lifecycle` · `tsdevstack-frontend-bff` (Next.js BFF).
-- `cloud/` — `tsdevstack-command-model` (what each command subsumes) ·
+- `cloud/`: `tsdevstack-command-model` (what each command subsumes) ·
   `tsdevstack-deploy-troubleshoot`.
-- `curation.json` — recommended third-party skills, pinned and pulled from each
+- `curation.json`: recommended third-party skills, pinned and pulled from each
   author's repo (**not re-hosted here**); decisions recorded under
   `install` / `candidates` / `rejected`.
 
@@ -48,7 +48,7 @@ cross-wire them.
 
 - One skill per directory, each with a single `SKILL.md`.
 - **Portable frontmatter only:** `name` and `description`. No Claude-only fields
-  (`model`, `effort`, `context`, `allowed-tools`, `disable-model-invocation`) —
+  (`model`, `effort`, `context`, `allowed-tools`, `disable-model-invocation`):
   other vendors ignore them, so never make behavior depend on them.
 - Keep bodies thin. Put canonical detail on the docs site and **link to the AI
   `.md` version of each page**: `https://tsdevstack.dev/docs/<category>/<page>.md`
