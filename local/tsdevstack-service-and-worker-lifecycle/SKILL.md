@@ -9,7 +9,7 @@ Scaffold and remove **only through the CLI.** Never hand-create a service folder
 
 ## Add a service
 
-- `npx tsdevstack add-service --type nestjs|nextjs|spa`. NestJS names must be lowercase and end `-service`; reserved names (`gateway`, `kong`, `redis`, `postgres`, …) are rejected.
+- `npx tsdevstack add-service --type nestjs|nextjs|spa`. NestJS names must be lowercase and end `-service`; reserved names (`gateway`, `kong`, `redis`, `postgres`, `shared`, `secrets`, `kv`, …) and names starting with `shared-` are rejected.
 - Then: `npm install` → `npx tsdevstack sync`.
 - Routes are served at `/{short-name}/` (the name minus `-service`).
 

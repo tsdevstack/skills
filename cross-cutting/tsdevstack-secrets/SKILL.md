@@ -19,13 +19,21 @@ Inject `SecretsService` (from `@tsdevstack/nest-common`) and `await this.secrets
 
 ## Add a secret
 
-1. Add the key to `.secrets.user.json`.
-2. Scope it to the services that need it (their per-service `secrets: []` list): a backend only receives the secrets it's scoped for.
-3. Run `npx tsdevstack generate-secrets` (or `sync`) to rebuild `.secrets.local.json`.
+A backend reads two scopes: **shared** and **its own**. Its own value wins when a key is in both. In the cloud, each service's identity can read only these two. Locally, nothing enforces it.
+
+1. Add the value to `.secrets.user.json`. Where it goes decides who reads it:
+   - In a service's section (`"offers-service": { "STRIPE_KEY": "sk_test_..." }`): that service's own scope. Use this for a secret one service needs.
+   - In the top-level `"secrets"` object: shared, readable by every backend. Only for values every service needs.
+2. Run `npx tsdevstack generate-secrets` (or `sync`) to rebuild `.secrets.local.json`. Backends pick it up within a minute, no restart.
+
+Frontends (Next.js, SPA) are different: at deploy they get the shared keys listed in their `secrets: []` array as environment variables. For backends that array changes nothing.
 
 ## First admins (`ADMIN_EMAILS`, auth template)
 
-`ADMIN_EMAILS` is a comma-separated list of emails. A confirmed user on the list becomes `ADMIN` at their next login. Locally it's in `.secrets.user.json` (created empty, already scoped to the auth service); run `generate-secrets` / `sync` and restart the auth service after editing it. In the cloud it lives in the **auth service's scope**, not shared: `npx tsdevstack cloud-secrets:set ADMIN_EMAILS --service auth-service --env <env>`. `cloud-secrets:push` offers it only when your local value is set, and prints that command otherwise.
+`ADMIN_EMAILS` is a comma-separated list of emails. A confirmed user on the list becomes `ADMIN` at their next login.
+
+- Locally: edit it in `.secrets.user.json` (created empty), then run `generate-secrets` or `sync`. It lands in the auth service's scope, and the auth service reads it within a minute.
+- In the cloud: it lives in the **auth service's scope**, not shared. Set it with `npx tsdevstack cloud-secrets:set ADMIN_EMAILS --service auth-service --env <env>`. `cloud-secrets:push` offers it only when your local value is set, and prints that command otherwise.
 
 ## Partner API keys are not secrets
 
@@ -33,12 +41,15 @@ Keys for partners (`@PartnerApi()` routes) are created at runtime through the au
 
 ## Cloud
 
-`npx tsdevstack cloud-secrets:push --env <env>` pushes user + framework secrets; set one with `cloud-secrets:set <KEY> --env <env>` (add `--service <name>` for a service-scoped secret). **Never copy local secrets to the cloud**: each environment is a separate account/project.
+`npx tsdevstack cloud-secrets:push --env <env>` pushes the framework secrets. It asks for each environment's value of your secrets and puts them in the same scopes as locally. Set one with `cloud-secrets:set <KEY> --env <env>`. Add `--service <name>` for a service's scope, and `--stdin` to pipe the value in. **Never copy local secrets to the cloud**: each environment is a separate account/project.
+
+An environment deployed before 0.11 keeps the auth secrets in shared. On Azure, it also keeps service secrets in the shared vault. Upgrade it in this order: `npx tsdevstack cloud-secrets:migrate --env <env>`, then `infra:deploy`, then `cloud-secrets:cleanup --env <env>` to delete the old copies.
 
 ## Missing / undefined secret
 
-- Confirm the key is in `.secrets.user.json` **and** scoped to the service, then re-run `generate-secrets` / `sync`.
-- In the cloud: confirm `cloud-secrets:push` ran and the service is in scope (shared scope is looked up before service scope).
+- Backend: the key must be in the top-level `"secrets"` object or in **this** service's section of `.secrets.user.json`. A value in another service's section isn't readable. Then re-run `generate-secrets` or `sync`.
+- Frontend: the key must be in its `secrets: []` array, and the frontend redeployed.
+- In the cloud: `cloud-secrets:get <KEY> --service <name> --env <env>` shows whether it's in the service's scope. Without `--service`, it checks the key's default scope. A service never reads another service's scope.
 
 ## Reference
 
