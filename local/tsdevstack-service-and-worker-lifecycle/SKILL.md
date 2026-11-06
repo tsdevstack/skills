@@ -16,13 +16,15 @@ Scaffold and remove **only through the CLI.** Never hand-create a service folder
 ## Remove a service
 
 - `npx tsdevstack remove-service <name>` → `npx tsdevstack sync`.
+- A service that subscribes to messaging topics: first remove its subscriptions and deploy it, wait ~15 minutes, then remove it (see the `tsdevstack-messaging` skill).
 - Renaming is manual only (cloud DBs can't be renamed) — remove and re-add if you must.
 
 ## Workers
 
-- **Inline worker** — runs in the same container; `worker.ts` / `worker.module.ts` bootstrapped via `startWorker(WorkerModule)`. Job code patterns → the `tsdevstack-nest-common` skill.
-- **Detached worker** — separate container (minimum 1 instance), entrypoint `dist/worker.js`. Register with `npx tsdevstack register-detached-worker`, remove with `npx tsdevstack unregister-detached-worker` (config only — no scaffolding).
-- A `worker.ts` file alone does nothing until it's registered.
+- **Queue processors run only in workers**, never in a service's `AppModule` (a service can scale to zero, and on GCP it then gets CPU only during requests). The service registers the queue to add jobs; the worker registers it and holds the processor.
+- **Worker files** in the base service: `src/worker.ts` / `src/worker.module.ts` bootstrapped via `startWorker(WorkerModule)`, `tsconfig.worker.json` (local build into `node_modules/.cache/worker-dev`), and the scripts `start-worker` (`node dist/worker.js`) and `start-worker:dev` (`nest start --entryFile worker --watch --path tsconfig.worker.json`). `npm run dev` starts every worker. Job code patterns → the `tsdevstack-nest-common` skill. The auth template ships with `auth-worker`.
+- **In the cloud** — separate container (minimum 1 instance), entrypoint `dist/worker.js`. It scales on CPU between `minInstances` and `maxInstances` (70% on AWS and Azure, 60% on GCP), not on queue length: a worker that mostly waits on the network (emails) stays at `minInstances`, so raise that for more throughput. Register with `npx tsdevstack register-detached-worker`, remove with `npx tsdevstack unregister-detached-worker` (config only — no scaffolding).
+- A `worker.ts` file alone does nothing in the cloud until it's registered.
 
 ## After any change
 

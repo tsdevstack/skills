@@ -1,11 +1,11 @@
 ---
 name: tsdevstack-storage
-description: Use when adding object storage (file upload/download, presigned URLs) to a tsdevstack service. The same code runs on local MinIO and cloud S3/GCS/Blob — never install a cloud SDK directly.
+description: Use when adding object storage (file upload/download, presigned URLs) to a tsdevstack service. The same code runs on local RustFS and cloud S3/GCS/Blob — never install a cloud SDK directly.
 ---
 
 # Object storage
 
-One API across providers. Local = MinIO; the cloud adapter is selected from `SECRETS_PROVIDER` (there is **no** separate `STORAGE_PROVIDER`). **Never install `@aws-sdk`, `@google-cloud/*`, or `@azure/*` directly** — use the module.
+One API across providers. Local = RustFS (S3-compatible, `http://localhost:9000`, console `9001`); the cloud adapter is selected from `SECRETS_PROVIDER` (there is **no** separate `STORAGE_PROVIDER`). **Never install `@aws-sdk`, `@google-cloud/*`, or `@azure/*` directly** — use the module.
 
 ## Set up
 

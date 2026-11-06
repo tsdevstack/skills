@@ -35,7 +35,7 @@ Kong changes reach the cloud only through a rebuilt image:
 | Infra (DB tier, buckets, new service runtime) | `infra:deploy` | the rest: it's included |
 | Service code only | `infra:deploy-services` (or `infra:deploy-service <name>`) | `infra:deploy` (slower, unneeded) |
 | Endpoint decorators / routes, `kong.user.yml`, `kong-plugins/` | `infra:generate-kong`, `infra:build-kong`, `infra:deploy-kong` | full deploy |
-| CLI upgrade (framework Kong plugins change) | the same three gateway steps | full deploy |
+| CLI upgrade | the release notes' upgrade steps; at least the three gateway steps (framework Kong plugins change) | |
 | Domains / SSL | `infra:deploy-lb` | full deploy |
 | Scheduled jobs | `infra:deploy-schedulers` | full deploy |
 | `framework.apiKeys.ipLimitPerMinute`, global `rate-limiting` (API key defaults) | the three gateway steps | full deploy |

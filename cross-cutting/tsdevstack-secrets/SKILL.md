@@ -49,7 +49,7 @@ An environment deployed before 0.11 keeps the auth secrets in shared. On Azure, 
 
 - Backend: the key must be in the top-level `"secrets"` object or in **this** service's section of `.secrets.user.json`. A value in another service's section isn't readable. Then re-run `generate-secrets` or `sync`.
 - Frontend: the key must be in its `secrets: []` array, and the frontend redeployed.
-- In the cloud: `cloud-secrets:get <KEY> --service <name> --env <env>` shows whether it's in the service's scope. Without `--service`, it checks the key's default scope. A service never reads another service's scope.
+- In the cloud: `cloud-secrets:get <KEY> --service <name> --env <env>` shows whether it's in the service's scope. It prints the value, so ask the user before you run it. Without `--service`, it checks the key's default scope. A service never reads another service's scope.
 
 ## Reference
 
