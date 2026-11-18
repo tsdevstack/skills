@@ -35,7 +35,8 @@ Skills are grouped by trigger into three folders:
   `tsdevstack-deploy-troubleshoot`.
 - `curation.json`: recommended third-party skills, pinned and pulled from each
   author's repo (**not re-hosted here**); decisions recorded under
-  `install` / `candidates` / `rejected`.
+  `install` / `candidates` / `rejected`. `init` installs the `install` list
+  right after these skills.
 
 ## This is NOT `.agents/skills/`
 

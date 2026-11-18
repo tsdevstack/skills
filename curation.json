@@ -1,13 +1,14 @@
 {
-  "_readme": "Third-party skill decisions for tsdevstack. `install[]` = blessed, auto-installed by init/sync via `npx skills add <source> --skill <skill> ...` pinned to `ref` (not re-hosted). `candidates[]` = vetted but not yet enabled. `rejected[]` = considered and declined, with reason (kept for the record).",
+  "_readme": "Third-party skill decisions for tsdevstack. `install[]` = blessed, installed by `init` after the tsdevstack skills, each as its SKILL.md at `ref` in the author's repo (`npx skills add https://raw.githubusercontent.com/<source>/<ref>/<path>`: one file, no clone, not re-hosted). The CLI keeps the same list; change both together. `candidates[]` = vetted but not yet enabled. `rejected[]` = considered and declined, with reason (kept for the record).",
   "install": [
     {
       "name": "Next.js dev-loop (official — Vercel / Next.js core)",
       "source": "vercel/next.js",
       "skills": ["next-dev-loop"],
-      "ref": "f6d094061e0c27ad74b3344065d203933021011c",
+      "ref": "d2defa02a2887f94b99a573cf17efbef112218fd",
+      "path": "skills/next-dev-loop/SKILL.md",
       "publisher": "official",
-      "note": "Version-agnostic: verify runtime behavior after editing app code. Pinned by SHA (no stable tag carries it yet)."
+      "note": "Verify runtime behavior after editing app code. Needs Next.js 16.3+ with Turbopack and agent-browser 0.31.1+ (init prints the install command). Pinned to the newest commit that changed the skill (checked 2026-11-09)."
     }
   ],
   "candidates": [
