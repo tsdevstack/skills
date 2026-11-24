@@ -10,6 +10,7 @@ Everything cross-cutting lives in `@tsdevstack/nest-common`. Models know NestJS;
 ## Bootstrap (don't hand-roll NestFactory)
 
 - Services start with `startApp(AppModule)`; detached workers with `startWorker(WorkerModule)`. These wire Swagger, security, versioning, health, and the global `AuthGuard`. **Do not call `NestFactory.create()` yourself.**
+- Cron jobs start with `runCronJob(CronModule, name)` (the generated `src/cron.ts`): it creates the module's context, runs one handler and exits.
 
 ## Use these, never reinstall
 
@@ -22,7 +23,8 @@ Everything cross-cutting lives in `@tsdevstack/nest-common`. Models know NestJS;
 - **Observability:** `ObservabilityModule` (one import for logging, metrics, tracing, health); inject `LoggerService` (use `.child('Ctx')`) and `MetricsService`. Tracing needs nothing more: one trace per request, carried through generated clients, BullMQ jobs, messages and Prisma queries, sent to the cloud's trace service. A call with your own axios instance or `fetch` drops the trace: add `injectTraceContext` from `@tsdevstack/telemetry` as a request interceptor. Deployed log level: `logLevel` per service in `infrastructure.json`, not `LOG_LEVEL`.
 - **Rate limiting:** `RateLimitModule` + `@RateLimit(...)`. Per-IP limits use the client IP Kong reports (`X-Real-IP`) only on requests that came through the gateway; direct calls are limited by socket address. The `userId` limiter counts partner keys by key id.
 - **Email / notifications:** `NotificationModule` / `NotificationService`.
-- **Background jobs:** `BullConfigModule`, `SchedulerGuard`. Queue processors run only in a worker (`startWorker(WorkerModule)`), never in the service's `AppModule`; the service only adds jobs. See the `tsdevstack-service-and-worker-lifecycle` skill.
+- **Cron jobs:** a handler is `@Injectable() class XCron implements CronJobHandler` with `readonly name` and `run(signal: AbortSignal)`: return is success, throw is failure. Inject PrismaService and others through the constructor. `src/cron.module.ts` lists the handlers with `provideCronJobs([...])`. `runCronJob` holds a Redis lock per job (a second start is skipped, exit 0), runs the handler in one trace span `cron <name>`, and aborts the signal at the job's `timeout` or on SIGTERM: check `signal.aborted` between long steps. No retries: keep jobs safe to run again. Files and commands: the `tsdevstack-service-and-worker-lifecycle` skill.
+- **Background jobs:** `BullConfigModule`, `SchedulerGuard` (for trigger endpoints). Queue processors run only in a worker (`startWorker(WorkerModule)`), never in the service's `AppModule`; the service only adds jobs. See the `tsdevstack-service-and-worker-lifecycle` skill.
 - **Service-to-service:** `BaseServiceClient` + `filterForwardHeaders`.
 - **Pub/sub** → the `tsdevstack-messaging` skill. **Object storage** → the `tsdevstack-storage` skill.
 
@@ -30,6 +32,7 @@ Everything cross-cutting lives in `@tsdevstack/nest-common`. Models know NestJS;
 
 - Install a library nest-common already provides (auth, Redis, logging, metrics, tracing, rate-limit, BullMQ, notifications, Prisma pooling).
 - Read secrets from `process.env`, create your own `PrismaClient`, or bootstrap Nest by hand.
+- Run code on a schedule inside a service or worker (`@nestjs/schedule`, node-cron): use a cron job.
 
 ## Reference
 

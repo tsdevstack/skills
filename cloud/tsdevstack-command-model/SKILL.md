@@ -12,8 +12,9 @@ the command to what actually changed.
 ## What the big command includes
 
 `npx tsdevstack infra:deploy --env <env>` runs the full chain: provision
-infrastructure (Terraform) → sync post-provision secrets → build images → push →
-deploy services → gateway (Kong: generate, build, deploy) → deploy load balancer.
+infrastructure (Terraform, including the schedules) → sync post-provision
+secrets → build images → push → deploy services (with their workers and cron
+jobs) → gateway (Kong: generate, build, deploy) → deploy load balancer.
 
 **After a full `infra:deploy`, do NOT separately run `infra:deploy-kong` or
 `infra:deploy-lb`**: they already ran.
@@ -33,11 +34,13 @@ Kong changes reach the cloud only through a rebuilt image:
 | Changed | Run | Not needed |
 |---|---|---|
 | Infra (DB tier, buckets, new service runtime) | `infra:deploy` | the rest: it's included |
-| Service code only | `infra:deploy-services` (or `infra:deploy-service <name>`) | `infra:deploy` (slower, unneeded) |
+| Service code only, a cron job's code included | `infra:deploy-services` (or `infra:deploy-service <name>`): deploys the service's cron jobs with the same image | `infra:deploy` (slower, unneeded) |
+| A new cron job (new `scheduledJobs` entry) | `infra:generate`, then `infra:deploy` | |
 | Endpoint decorators / routes, `kong.user.yml`, `kong-plugins/` | `infra:generate-kong`, `infra:build-kong`, `infra:deploy-kong` | full deploy |
 | CLI upgrade | the release notes' upgrade steps; at least the three gateway steps (framework Kong plugins change) | |
 | Domains / SSL | `infra:deploy-lb` | full deploy |
-| Scheduled jobs | `infra:deploy-schedulers` | full deploy |
+| Scheduled jobs: a schedule, a cron job's `timeout`, `cpu` or `memory` | `infra:generate`, then `infra:deploy-schedulers` | full deploy |
+| Run a scheduled job now (test it, don't wait for the schedule) | `infra:run-cron --job <name> --env <env>` | any deploy |
 | `framework.apiKeys.ipLimitPerMinute`, global `rate-limiting` (API key defaults) | the three gateway steps | full deploy |
 | API keys (create, limits, revoke, rotate) | nothing: admin API at runtime | any deploy |
 

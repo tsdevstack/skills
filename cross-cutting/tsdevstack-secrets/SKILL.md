@@ -41,7 +41,7 @@ Keys for partners (`@PartnerApi()` routes) are created at runtime through the au
 
 ## Cloud
 
-`npx tsdevstack cloud-secrets:push --env <env>` pushes the framework secrets. It asks for each environment's value of your secrets and puts them in the same scopes as locally. Set one with `cloud-secrets:set <KEY> --env <env>`. Add `--service <name>` for a service's scope, and `--stdin` to pipe the value in. **Never copy local secrets to the cloud**: each environment is a separate account/project.
+`npx tsdevstack cloud-secrets:push --env <env>` pushes the framework secrets. It asks for each environment's value of your secrets and puts them in the same scopes as locally. The user runs these commands in their own terminal: an agent gives the command and never asks for a secret value. Set one with `cloud-secrets:set <KEY> --env <env>`. Add `--service <name>` for a service's scope, and `--stdin` to pipe the value in. **Never copy local secrets to the cloud**: each environment is a separate account/project.
 
 An environment deployed before 0.11 keeps the auth secrets in shared. On Azure, it also keeps service secrets in the shared vault. Upgrade it in this order: `npx tsdevstack cloud-secrets:migrate --env <env>`, then `infra:deploy`, then `cloud-secrets:cleanup --env <env>` to delete the old copies.
 
